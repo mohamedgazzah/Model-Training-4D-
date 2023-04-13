@@ -1,0 +1,71 @@
+function [fitresult, gof] = createFit(DyeConcentrationmM, Timehours, Sizenm,SaltConcentrationmM)
+
+%% Fit: 'untitled fit 3'.
+[xData, yData, zData] = prepareSurfaceData( DyeConcentrationmM, Timehours, Sizenm );
+
+% Set up fittype and options.
+ft = fittype( 'a*exp(x)+b*log(y)+x', 'independent', {'x', 'y'}, 'dependent', 'z' );
+opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+opts.Display = 'Off';
+opts.StartPoint = [0.381345204444472 0.163569909784993];
+
+% Fit model to data.
+[fitresult, gof] = fit( [xData, yData], zData, ft, opts );
+
+
+% Plot fit with data.
+figure( 'Name', 'untitled fit 3' );
+
+salt01 = 0.1 + zeros(length(Sizenm),1);
+salt1 = 1 + zeros(length(Sizenm),1);
+salt5 = 5 + zeros(length(Sizenm),1);
+salt10 = 10 + zeros(length(Sizenm),1);
+salt20 = 20 + zeros(length(Sizenm),1);
+
+s01 = (salt01 == SaltConcentrationmM);
+s1 = (salt1 == SaltConcentrationmM);
+s5 = (salt5 == SaltConcentrationmM);
+s10 = (salt10 == SaltConcentrationmM);
+s20 = (salt20 == SaltConcentrationmM);
+
+x01Data = (xData.*s01);
+x1Data = (xData.*s1);
+x5Data = (xData.*s5);
+x10Data = (xData.*s10);
+x20Data = (xData.*s20);
+
+y01Data = (xData.*s01);
+y1Data = (xData.*s1);
+y5Data = (xData.*s5);
+y10Data = (xData.*s10);
+y20Data = (xData.*s20);
+
+z01Data = (xData.*s01);
+z1Data = (xData.*s1);
+z5Data = (xData.*s5);
+z10Data = (xData.*s10);
+z20Data = (xData.*s20);
+
+plot(fitresult)
+hold on 
+plot([x01Data,y01Data],z01Data)
+hold on 
+plot([x1Data,y1Data],z1Data)
+hold on 
+plot([x10Data,y10Data],z10Data)
+hold on 
+plot([x01Data,y01Data],z01Data)
+hold on 
+plot([x01Data,y01Data],z01Data)
+
+legend( 'Fit', 'Sizenm vs. DyeConcentrationmM, Timehours', 'Location', 'NorthEast', 'Interpreter', 'none' );
+% Label axes
+xlabel( 'DyeConcentrationmM', 'Interpreter', 'none' );
+ylabel( 'Timehours', 'Interpreter', 'none' );
+zlabel( 'Sizenm', 'Interpreter', 'none' );
+fprintf('R-Squared: %0.2f',gof.adjrsquare)
+str = ['R-Squared: ',sprintf('%0.2f',gof.adjrsquare)];
+annotation('textbox',[.15 0.9 0 0],'string',str,'FitBoxToText','on','EdgeColor','black')
+grid on
+
+
